@@ -31,30 +31,47 @@ def index():
 
 @app.route('/api/predict', methods=['POST'])
 def run_simulation():
+    record_interval = 30  # How often to record values to be send to the client
+
     room = request.json
     sim = Simulator(room)
     c = Controller()
 
     target_temp = room['target_temp']
 
+    start_time = int(sim.time.timestamp())
     temp_hist = [sim.temp()]
+    outside_temp_hist = [sim.weather.at_time(sim.time)]
     control_data = [
         {
-            'time': sim.time.total_seconds(),
+            'time': int(sim.time.timestamp()),
             'heating': False
         }
     ]
     heating = c.work(temp_hist[-1], target_temp)
 
-    for i in range(3600 * 2):
+    for i in range(3600):
         heating = c.work(temp_hist[-1], target_temp)
-        temp_hist.append(sim.tick(heating=heating))
-        control_data.append({
-            'time': sim.time.total_seconds(),
-            'heating': False
-        })
+        current_temp = sim.tick(heating=heating)
+        # Record values to be graphed on the client
+        if i % record_interval == 0:
+            temp_hist.append(current_temp)
+            outside_temp_hist.append(sim.weather.at_time(sim.time))
+        # Log changes to controller output
+        if heating != control_data[-1]['heating']:
+            control_data.append({
+                'time': int(sim.time.timestamp()),
+                'heating': heating
+            })
 
-    return jsonify({'preview': temp_hist, 'control': control_data})
+    return jsonify(
+        {
+            'init_time': start_time,
+            'temp_hist': temp_hist,
+            'outdoor_temp_hist': outside_temp_hist,
+            'control': control_data
+        }
+    )
 
 
 if __name__ == '__main__':
