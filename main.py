@@ -2,6 +2,7 @@ from simulator import Simulator
 from controller import Controller
 import matplotlib.pyplot as plt
 from flask import Flask, request, send_file, send_from_directory, jsonify
+from flask_cors import CORS, cross_origin
 
 # A basic 5m x 5m room with two 1m x 1m windows, 2.75m tall
 ROOM = {
@@ -21,6 +22,7 @@ ROOM = {
 
 # Setup flask web server
 app = Flask(__name__, static_url_path='', static_folder='static')
+CORS(app)
 
 
 # Serve home page
@@ -30,6 +32,7 @@ def index():
 
 
 @app.route('/api/predict', methods=['POST'])
+@cross_origin()
 def run_simulation():
     record_interval = 30  # How often to record values to be send to the client
 
