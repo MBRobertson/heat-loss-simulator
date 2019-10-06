@@ -67,6 +67,7 @@ def run_simulation():
     return jsonify(
         {
             'init_time': start_time,
+            'interval': record_interval,
             'temp_hist': temp_hist,
             'outdoor_temp_hist': outside_temp_hist,
             'control': control_data
