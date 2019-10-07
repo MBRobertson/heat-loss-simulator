@@ -27,7 +27,7 @@ class Simulator:
         # Default start date to the following day
         if start_date is None:
             start_date = datetime.datetime.today().replace(hour=0, minute=0, second=0, microsecond=0)
-            start_date = start_date + datetime.timedelta(days=1)
+            start_date = start_date + datetime.timedelta(days=1, hours=6)
         self.time = start_date
         self.weather = weather.defaultProvider(town=room['location'])
         self.heater = Heater(room['heater'])

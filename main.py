@@ -1,6 +1,5 @@
 from simulator import Simulator
 from controller import Controller
-import matplotlib.pyplot as plt
 from flask import Flask, request, send_file, send_from_directory, jsonify
 from flask_cors import CORS, cross_origin
 
@@ -30,7 +29,18 @@ CORS(app)
 def index():
     return send_file('static/index.html')
 
+"""
+Ziegler Nichols
+Tau = 60
+K = 4.41
+T = 1230
 
+Lambda = 0.5
+
+2.4
+2.4/120
+2.4*30
+"""
 @app.route('/api/predict', methods=['POST'])
 @cross_origin()
 def run_simulation():
@@ -38,7 +48,7 @@ def run_simulation():
 
     room = request.json
     sim = Simulator(room)
-    c = Controller()
+    c = Controller(kp=2.4, kd=2.4*30, ki=2.4/240, heater=sim.heater)
 
     target_temp = room['target_temp']
 
@@ -51,10 +61,15 @@ def run_simulation():
             'heating': False
         }
     ]
-    heating = c.work(temp_hist[-1], target_temp)
 
-    for i in range(3600):
-        heating = c.work(temp_hist[-1], target_temp)
+    heating = False
+
+    for i in range(4*3600):
+        # Only allow controller to run every 5 minutes
+        if i % (5*60) == 0:
+            heating = c.work(temp_hist[-1] - target_temp)
+        else:
+            c.work(temp_hist[-1] - target_temp)
         current_temp = sim.tick(heating=heating)
         # Record values to be graphed on the client
         if i % record_interval == 0:

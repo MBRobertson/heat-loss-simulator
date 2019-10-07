@@ -2,3 +2,5 @@ requests
 matplotlib
 flask
 flask-cors
+numpy
+control
