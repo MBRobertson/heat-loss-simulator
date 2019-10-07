@@ -21,7 +21,6 @@ class Heater:
 
 class Simulator:
     def __init__(self, room, start_date=None):
-        self.energy = R.compute_air_energy(room['init_temp'], room['volume'])
         self.room = room
         self.hl = R.compute_heat_loss(room['A'])  # Heat loss (W/C)
         # Default start date to the following day
@@ -31,6 +30,7 @@ class Simulator:
         self.time = start_date
         self.weather = weather.defaultProvider(town=room['location'])
         self.heater = Heater(room['heater'])
+        self.energy = R.compute_air_energy(room['init_temp'] if 'init_temp' in room else self.weather.at_time(self.time), room['volume'])
 
     def temp(self):
         return R.compute_air_temp(self.energy, self.room['volume'])
