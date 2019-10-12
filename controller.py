@@ -5,12 +5,14 @@ class Controller:
         self.kp = kp
         self.ki = ki
         self.kd = kd
-        self.last_error = 0
+        self.last_error = None
         self.total_error = 0
 
     def work(self, error):
         if self.heater:
             ep = error
+            if self.last_error is None:
+                self.last_error = error
             ed = self.last_error - error
             self.last_error = error
             self.total_error += error

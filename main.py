@@ -2,6 +2,7 @@ from simulator import Simulator
 from controller import Controller
 from flask import Flask, request, send_file, send_from_directory, jsonify
 from flask_cors import CORS, cross_origin
+import datetime
 
 # A basic 5m x 5m room with two 1m x 1m windows, 2.75m tall
 ROOM = {
@@ -47,10 +48,12 @@ def run_simulation():
     record_interval = 30  # How often to record values to be send to the client
 
     room = request.json
-    sim = Simulator(room)
-    c = Controller(kp=2.4, kd=2.4*30, ki=2.4/240, heater=sim.heater)
+    sim = Simulator(room, start_date=datetime.datetime.fromtimestamp(room['from']) if 'from' in room else None)
+    c = Controller(kp=2.2, kd=2.4*200, ki=2.4/10000, heater=sim.heater)
 
     target_temp = room['target_temp']
+    interval = room['interval'] * 60 if 'interval' in room else 60
+    last_interval = interval
 
     start_time = int(sim.time.timestamp())
     temp_hist = [sim.temp()]
@@ -64,10 +67,19 @@ def run_simulation():
 
     heating = False
 
-    for i in range(4*3600):
+    time = 4 * 3600
+    if 'from' in room and 'to' in room:
+        delta = room['to'] - room['from']
+        time = delta if delta >= 0 else time
+
+    for i in range(time):
         # Only allow controller to run every 5 minutes
-        if i % (5*60) == 0:
-            heating = c.work(temp_hist[-1] - target_temp)
+        last_interval += 1
+        if last_interval >= interval:
+            new_heating = c.work(temp_hist[-1] - target_temp)
+            if new_heating != heating:
+                heating = new_heating
+                last_interval = 0
         else:
             c.work(temp_hist[-1] - target_temp)
         current_temp = sim.tick(heating=heating)

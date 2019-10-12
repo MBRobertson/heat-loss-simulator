@@ -1,8 +1,11 @@
 # R-Values
 R = {
-    'ROOF': 3.3,
-    'WALL': 2.0,
-    'FLOOR': 1.3,
+    # 'ROOF': 2.2,
+    # 'WALL': 3.4,
+    # 'FLOOR': 4.32,
+    'ROOF': 6.2,
+    'WALL': 11.4,
+    'FLOOR': 7.32,
     'WINDOW_DOUBLE_ALUMINUM': 0.26,
     'WINDOW_SINGLE_WOOD': 0.27,
     'WINDOW_DOUBLE_HIGH_PERFORMANCE': 0.48

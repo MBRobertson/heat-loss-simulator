@@ -30,14 +30,14 @@ class Simulator:
         self.time = start_date
         self.weather = weather.defaultProvider(town=room['location'])
         self.heater = Heater(room['heater'])
-        self.energy = R.compute_air_energy(room['init_temp'] if 'init_temp' in room else self.weather.at_time(self.time), room['volume'])
+        self.energy = R.compute_air_energy((room['init_temp'] if 'init_temp' in room else self.weather.at_time(self.time)) + 0.01, room['volume'])
 
     def temp(self):
         return R.compute_air_temp(self.energy, self.room['volume'])
 
     def tick(self, heating=True, seconds=1):
         room_temp = self.temp()
-        delta_temp = max(0, room_temp - self.weather.at_time(self.time))
+        delta_temp = room_temp - self.weather.at_time(self.time)
 
         q_gain = self.heater.work(running=heating, seconds=seconds)
         q_loss = self.hl * delta_temp * seconds
