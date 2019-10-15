@@ -2,7 +2,9 @@ import datetime
 
 import r_values as R
 import weather
-
+import glob
+import thermometer
+import switch
 
 class Heater:
     def __init__(self, wattage, delay=60):
@@ -22,6 +24,9 @@ class Heater:
 class Simulator:
     def __init__(self, room, start_date=None):
         self.room = room
+        self.room['init_temp'] = thermometer.get_temp()
+        if room['init_temp'] < room['target_temp']:
+            switch.on()
         self.hl = R.compute_heat_loss(room['A'])  # Heat loss (W/C)
         # Default start date to the following day
         if start_date is None:
@@ -47,3 +52,5 @@ class Simulator:
         self.time = self.time + datetime.timedelta(seconds=seconds)
 
         return self.temp()
+
+    

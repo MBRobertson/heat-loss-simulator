@@ -91,10 +91,9 @@ def run_simulation():
             control_data.append({
                 'time': int(sim.time.timestamp()),
                 'heating': heating
-            })
+            })                                                                                                                                                                                                                                                               ) )
     return jsonify(
         {
-
             'init_time': start_time,
             'interval': record_interval,
             'temp_hist': temp_hist,
