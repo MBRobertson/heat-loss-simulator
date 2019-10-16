@@ -24,9 +24,6 @@ class Heater:
 class Simulator:
     def __init__(self, room, start_date=None):
         self.room = room
-        self.room['init_temp'] = thermometer.get_temp()
-        if room['init_temp'] < room['target_temp']:
-            switch.on()
         self.hl = R.compute_heat_loss(room['A'])  # Heat loss (W/C)
         # Default start date to the following day
         if start_date is None:
@@ -34,6 +31,8 @@ class Simulator:
             start_date = start_date + datetime.timedelta(days=1, hours=6)
         self.time = start_date
         self.weather = weather.defaultProvider(town=room['location'])
+        if self.weather.at_time(self.time) < room['target_temp']:
+            switch.on()
         self.heater = Heater(room['heater'])
         self.energy = R.compute_air_energy((room['init_temp'] if 'init_temp' in room else self.weather.at_time(self.time)) + 0.01, room['volume'])
 
