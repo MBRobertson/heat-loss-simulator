@@ -21,9 +21,3 @@ class Controller:
             return (self.kp * ep + self.ki * ei + self.kd * ed) < 0
         else:
             return error < 0
-        # if current_temp > target_temp - 1:
-        #     self.running = False
-        # elif current_temp < target_temp + 1:
-        #     self.running = True
-        #
-        # return self.running
