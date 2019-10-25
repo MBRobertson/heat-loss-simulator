@@ -3,6 +3,7 @@ from controller import Controller
 from flask import Flask, request, send_file, send_from_directory, jsonify
 from flask_cors import CORS, cross_origin
 import datetime
+import switch
 
 # A basic 5m x 5m room with two 1m x 1m windows, 2.75m tall
 ROOM = {
@@ -71,6 +72,7 @@ def run_simulation():
         delta = room['to'] - room['from']
         time = delta if delta >= 0 else time
 
+    #pdb.set_trace()
     for i in range(time):
         # Only allow controller to run every 5 minutes
         last_interval += 1
@@ -92,6 +94,7 @@ def run_simulation():
                 'time': int(sim.time.timestamp()),
                 'heating': heating
             })
+    switch.times(control_data)
     return jsonify(
         {
 

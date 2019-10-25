@@ -4,7 +4,6 @@ import r_values as R
 import weather
 import glob
 import thermometer
-import switch
 
 class Heater:
     def __init__(self, wattage, delay=60):
@@ -31,8 +30,6 @@ class Simulator:
             start_date = start_date + datetime.timedelta(days=1, hours=6)
         self.time = start_date
         self.weather = weather.defaultProvider(town=room['location'])
-        if self.weather.at_time(self.time) < room['target_temp']:
-            switch.on()
         self.heater = Heater(room['heater'])
         self.energy = R.compute_air_energy((room['init_temp'] if 'init_temp' in room else self.weather.at_time(self.time)) + 0.01, room['volume'])
 
