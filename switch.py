@@ -3,8 +3,7 @@ import threading
 import time
 
 def threadd(data):
-    print(data)
-    print(time.time())
+    #looks for wemo switch and checks it found one
     env = Environment()
     env.start()
     env.discover(5)
@@ -13,20 +12,21 @@ def threadd(data):
         print("no switches found")
         exit(0)
     switch = env.get_switch(switches[0])
+    #llops through every on off signal
     for sig in data:
-        print(sig)
+        #goes to next signal if past current signal time 
         if int(time.time()) > sig['time']:
             print("pass")
             pass
         else:
-            print("waiting ", int(sig['time'] - int(time.time())))
+            #waites until end of current period
             time.sleep(sig['time'] - int(time.time()))
             if sig['heating'] == True:
                 print("on")
-                #switch.on()
+                switch.on()
             else:
                 print("off")
-                #switch.off()
+                switch.off()
 
     
 
